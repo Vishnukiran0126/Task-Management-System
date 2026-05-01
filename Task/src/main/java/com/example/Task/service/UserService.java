@@ -11,10 +11,13 @@ import com.example.Task.entites.Task;
 import com.example.Task.entites.User;
 import com.example.Task.repositories.UserRepository;
 import com.example.Task.utils.PaginationUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,10 +27,14 @@ public class UserService {
 
     private UserRepository userRepository;
     private final UserMapper um;
+
+    @Autowired
+    private PasswordEncoder encoder;
     public UserService(UserRepository userRepository,UserMapper um) {
 
         this.um=um;
         this.userRepository = userRepository;
+
     }
 
     public User getUserById(long id) {
@@ -55,6 +62,7 @@ public class UserService {
 
     public UserResponseDto addUser(UserRequestDto user) {
         User newUser=um.toEntity(user);
+        newUser.setPassword(encoder.encode(newUser.getPassword()));
         userRepository.save(newUser);
         return um.toDto(newUser);
     }

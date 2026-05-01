@@ -13,6 +13,8 @@ import java.util.List;
 
 public interface TaskRepository extends JpaRepository<Task,Long>, JpaSpecificationExecutor<Task> {
 
+      public Long countByStatus(TaskStatus status);
+
 //    public Page<Task> findTasksByProjectId(long projectId, Pageable pageable);
 ////
 //    public Page<Task> findTasksByProjectIdAndStatus(long projectId, TaskStatus status, Pageable pageable);

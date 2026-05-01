@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -221,6 +222,16 @@ public class TaskService {
 
     public TaskResponseDto getTaskById(long taskId) {
         return tm.toDto(taskRepository.findById(taskId).orElseThrow(()->new ResourceNotFoundException("Task with id can't be found!")));
+
+    }
+
+    public HashMap<String,Long> getDashboardStats() {
+        HashMap<String,Long> hm =new HashMap<>();
+        hm.put("Total",taskRepository.count());
+        hm.put("Completed",taskRepository.countByStatus(TaskStatus.COMPLETED));
+        hm.put("TODO", taskRepository.countByStatus(TaskStatus.TODO));
+        hm.put("IN_PROGRESS", taskRepository.countByStatus(TaskStatus.IN_PROGRESS));
+        return hm;
 
     }
 

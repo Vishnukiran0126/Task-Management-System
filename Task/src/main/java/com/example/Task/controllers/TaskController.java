@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.hibernate.query.Page.page;
@@ -124,6 +125,12 @@ public class TaskController {
     public ResponseEntity<?> deleteTask(@PathVariable long taskId) {
         taskService.deleteTask(taskId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<HashMap<String,Long>> getDashboardData(){
+        HashMap<String,Long> hm =taskService.getDashboardStats();
+        return ResponseEntity.ok(hm);
     }
 
 }
