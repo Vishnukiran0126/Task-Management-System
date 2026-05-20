@@ -1,10 +1,8 @@
 package com.example.Task.service;
 
+import com.example.Task.Dtos.*;
 import com.example.Task.Dtos.Pagination.PaginatedResponse;
 import com.example.Task.Dtos.Pagination.PaginationRequest;
-import com.example.Task.Dtos.UserMapper;
-import com.example.Task.Dtos.UserRequestDto;
-import com.example.Task.Dtos.UserResponseDto;
 import com.example.Task.Exception.ResourceNotFoundException;
 import com.example.Task.Specification.UserSpecification;
 import com.example.Task.entites.Task;
@@ -16,6 +14,9 @@ import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,11 +26,17 @@ import java.util.List;
 @Service
 public class UserService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
     private final UserMapper um;
 
     @Autowired
     private PasswordEncoder encoder;
+
+    @Autowired
+    private JWTService jwtService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;// created in security config
     public UserService(UserRepository userRepository,UserMapper um) {
 
         this.um=um;
@@ -91,4 +98,20 @@ public class UserService {
     }
 
 
+    public LoginResponseDto verify(LoginDto user) {
+        //verify if the logged in user is valid
+        Authentication auth =authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(),user.getPassword()));
+        //this method takes Authentication obj, UsernamePasswordAuthenticationToken indirectly implements it!
+
+        //in the above line, passing an unauthenticated obj and getting an authenticated user
+        LoginResponseDto res =new LoginResponseDto();
+        if(auth.isAuthenticated()){
+            System.out.println("Inside login authentication!");
+            res.setToken(jwtService.generateToken(user.getUsername(),userRepository.getUserByName(user.getUsername()).getRole()));
+            res.setUserName(user.getUsername());
+            res.setRole(userRepository.getUserByName(user.getUsername()).getRole());
+            return res;
+        }
+        return res;
+    }
 }

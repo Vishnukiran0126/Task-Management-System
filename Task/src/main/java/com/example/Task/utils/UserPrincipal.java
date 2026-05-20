@@ -18,10 +18,16 @@ public class UserPrincipal implements UserDetails {
         this.u=u;
     }
 
+//    @Override
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//        return Collections.singleton(new SimpleGrantedAuthority("USER"));
+//    }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority("USER"));
-    }
+        return Collections.singletonList(
+                new SimpleGrantedAuthority("ROLE_" + u.getRole())
+        );
+}
 
     @Override
     public @Nullable String getPassword() {

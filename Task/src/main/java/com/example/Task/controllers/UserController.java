@@ -1,5 +1,7 @@
 package com.example.Task.controllers;
 
+import com.example.Task.Dtos.LoginDto;
+import com.example.Task.Dtos.LoginResponseDto;
 import com.example.Task.Dtos.Pagination.PaginatedResponse;
 import com.example.Task.Dtos.Pagination.PaginationRequest;
 import com.example.Task.Dtos.UserRequestDto;
@@ -49,7 +51,7 @@ public class UserController {
 
     @PostMapping("/user")
     public ResponseEntity<UserResponseDto> createUser(@RequestBody UserRequestDto user) {
-        System.out.println("Called creatUser");
+        System.out.println("Called createUser");
         System.out.println(user.getEmail());
         return new ResponseEntity<>(userService.addUser(user), HttpStatus.CREATED);
     }
@@ -64,5 +66,12 @@ public class UserController {
     public ResponseEntity<User> deleteUser(@PathVariable long id) {
         userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginDto user){
+        System.out.println("Logged in User: "+user.getUsername());
+        return ResponseEntity.ok(userService.verify(user));
+        //return "Success";// hard-coded value
     }
 }
